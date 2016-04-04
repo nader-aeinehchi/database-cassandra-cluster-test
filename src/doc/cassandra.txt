@@ -1,0 +1,53 @@
+#How to setup a cluster on localhost, e.g. 5 Cassandra nodes on the same local machine:
+http://www.datastax.com/dev/blog/ccm-a-development-tool-for-creating-local-cassandra-clusters
+
+Having installed CCM (Installing CCM chapter), run the following command.  Here, you install Casssandra version 3.3 with a cluster name
+#called "MyCluster".  You also create 5 nodes in the cluster.
+ccm create --version 3.3 --nodes 5 --start MyCluster
+
+#To start the cluster, run
+ccm start
+
+"To stop the cluster, run
+ccm stop
+
+
+
+#Create Keyspace "MyCluster"
+CREATE KEYSPACE MyCluster WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3'}  AND durable_writes = true;
+
+#Create the following table
+CREATE TABLE person (
+    pid int,
+	posttime timestamp,
+    address text,
+    firstname text,
+    lastname text,
+    node int,
+    payload blob,
+  PRIMARY KEY (pid, posttime)
+) WITH CLUSTERING ORDER BY (posttime ASC);
+
+
+#Usefull commands
+#To connect to e.g. the forth node on the local host
+cqlsh 127.0.0.4
+
+#To change to "MyCluster" as the keyspace
+use keyspace MyCluster;
+
+select * from person;
+
+#To delete everything in person
+truncate table person;
+
+#############################################3
+# The following table definition is deprecated and will not work with the test application.
+CREATE TABLE person (
+    pid int,
+    address text,
+    firstname text,
+    lastname text,
+    node int,
+  PRIMARY KEY (pid)
+) ;
